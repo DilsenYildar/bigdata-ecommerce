@@ -16,8 +16,8 @@ public class ShoppingCartResource {
 
     @GET
     @Path("/{key}")
-    public String getShoppingCart(@PathParam("key") String key) {
-        String cart = shoppingCartService.get(key);
+    public String getShoppingCart(@PathParam("key") String username) {
+        String cart = shoppingCartService.get(username);
         return cart != null
                 ? cart
                 : "could not found item";
@@ -25,16 +25,17 @@ public class ShoppingCartResource {
 
     @DELETE
     @Path("/{key}/{name}")
-    public String removeItemFromCart(@PathParam("key") String key, @PathParam("name") String name) {
-        return shoppingCartService.remove(key, name)
+    public String removeItemFromCart(@PathParam("key") String username, @PathParam("name") String name) {
+        return shoppingCartService.remove(username, name)
                 ? "successfully updated cart"
                 : "could not updated";
     }
 
     @POST
+    @Path("/{key}")
     @Consumes(MediaType.APPLICATION_JSON)
-    public String addItemToShoppingCart(Item item) {
-        return shoppingCartService.addValueToKey(item.getUsername(), item)
+    public String addItemToShoppingCart(@PathParam("key") String username, Item item) {
+        return shoppingCartService.addValueToKey(username, item)
                 ? "successfully add item to cart"
                 : "unable to add";
     }

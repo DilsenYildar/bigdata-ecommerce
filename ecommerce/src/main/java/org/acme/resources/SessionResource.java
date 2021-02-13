@@ -1,7 +1,7 @@
 package org.acme.resources;
 
 import com.google.gson.Gson;
-import org.acme.models.UserInfo;
+import org.acme.models.User;
 import org.acme.services.SessionService;
 
 import javax.inject.Inject;
@@ -20,7 +20,7 @@ public class SessionResource {
     public String getSession(@PathParam("key") String key) throws Exception {
         String session = service.get(key);
         return session != null && !session.isEmpty()
-                ? new Gson().toJson(new UserInfo(key, session))
+                ? new Gson().toJson(new User(key, session))
                 : "session data not found";
     }
 
@@ -34,8 +34,8 @@ public class SessionResource {
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public String login(UserInfo userInfo) {
-        return service.set(userInfo.getUsername(), userInfo.getPassword())
+    public String login(User user) {
+        return service.set(user.getUsername(), user.getPassword())
                 ? "successfully login"
                 : "unable to logout";
     }
