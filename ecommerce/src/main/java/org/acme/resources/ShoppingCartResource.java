@@ -1,6 +1,7 @@
-package org.acme;
+package org.acme.resources;
 
-import com.google.gson.*;
+import org.acme.services.ShoppingCartService;
+import org.acme.models.Item;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;

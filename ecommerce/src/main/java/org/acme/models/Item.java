@@ -1,4 +1,4 @@
-package org.acme;
+package org.acme.models;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

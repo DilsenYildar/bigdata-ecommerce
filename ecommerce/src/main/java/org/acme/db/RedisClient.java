@@ -1,16 +1,15 @@
-package org.acme;
+package org.acme.db;
 
 import redis.clients.jedis.*;
 import redis.clients.jedis.params.SetParams;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Singleton;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
-@ApplicationScoped
-class RedisClient {
+@Singleton
+public class RedisClient {
     public static final String REDIS_HOST = "localhost";
     public static final int REDIS_PORT = 6379;
 

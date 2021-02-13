@@ -1,4 +1,4 @@
-package org.acme;
+package org.acme.crypto;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;

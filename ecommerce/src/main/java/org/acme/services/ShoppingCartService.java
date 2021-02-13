@@ -1,17 +1,19 @@
-package org.acme;
+package org.acme.services;
 
 import com.google.gson.*;
+import org.acme.db.RedisClient;
+import org.acme.models.Item;
 
-import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
-@ApplicationScoped
+@Singleton
 public class ShoppingCartService {
 
     @Inject
     RedisClient redisClient;
 
-    String get(String key) {
+    public String get(String key) {
         String result = null;
         String cart = redisClient.get(key);
         if (cart != null && !cart.isEmpty()) {
@@ -25,7 +27,7 @@ public class ShoppingCartService {
         return result;
     }
 
-    boolean remove(String key, String name) {
+    public boolean remove(String key, String name) {
         boolean updated = false;
         String cart = redisClient.get(key);
         if (cart != null && !cart.isEmpty()) {
@@ -42,7 +44,7 @@ public class ShoppingCartService {
         return updated;
     }
 
-    boolean addValueToKey(String key, Item item){
+    public boolean addValueToKey(String key, Item item){
         String userItems = redisClient.get(key);
         JsonArray itemArray = new JsonArray();
         if (userItems != null && !userItems.isEmpty()) {

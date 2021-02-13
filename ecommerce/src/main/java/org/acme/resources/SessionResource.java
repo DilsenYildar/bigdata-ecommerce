@@ -1,6 +1,8 @@
-package org.acme;
+package org.acme.resources;
 
 import com.google.gson.Gson;
+import org.acme.models.UserInfo;
+import org.acme.services.SessionService;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
