@@ -16,18 +16,18 @@ public class SessionResource {
     SessionService service;
 
     @GET
-    @Path("/{key}")
-    public String getSession(@PathParam("key") String key) throws Exception {
-        String session = service.get(key);
-        return session != null && !session.isEmpty()
-                ? new Gson().toJson(new User(key, session))
+    @Path("/{username}")
+    public String getSession(@PathParam("username") String username) throws Exception {
+        String password = service.get(username);
+        return password != null && !password.isEmpty()
+                ? new Gson().toJson(new User(username, password))
                 : "session data not found";
     }
 
     @DELETE
-    @Path("/{key}")
-    public String logout(@PathParam("key") String key) {
-        return service.remove(key)
+    @Path("/{username}")
+    public String logout(@PathParam("username") String username) {
+        return service.remove(username)
                 ? "successfully logout"
                 : "could not logout";
     }

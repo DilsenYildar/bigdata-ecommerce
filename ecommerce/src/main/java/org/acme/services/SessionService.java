@@ -18,20 +18,20 @@ public class SessionService {
     @Inject
     Cryptographer cryptographer;
 
-    public String get(String key) throws Exception {
+    public String get(String username) throws Exception {
         String decryptedPass = null;
-        String value = redisClient.get(key);
+        String value = redisClient.get(username);
         if (value != null) {
             decryptedPass = cryptographer.decrypt(value);
         }
         return decryptedPass;
     }
 
-    public boolean set(String key, String value) {
-        return redisClient.set(key, cryptographer.encrypt(value), EXPIRATION_IN_THREE_MINUTES);
+    public boolean set(String username, String password) {
+        return redisClient.set(username, cryptographer.encrypt(password), EXPIRATION_IN_THREE_MINUTES);
     }
 
-    public boolean remove(String key) {
-        return redisClient.remove(key);
+    public boolean remove(String username) {
+        return redisClient.remove(username);
     }
 }

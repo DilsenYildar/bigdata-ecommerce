@@ -3,15 +3,21 @@ package org.acme.services;
 import com.google.gson.*;
 import org.acme.db.RedisClient;
 import org.acme.models.Item;
+import org.acme.models.entites.Product;
+import org.acme.repository.ProductRepository;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.management.Query;
 
 @Singleton
 public class ShoppingCartService {
 
     @Inject
     RedisClient redisClient;
+
+    @Inject
+    ProductRepository productRepository;
 
     public String get(String key) {
         String result = null;
@@ -44,13 +50,19 @@ public class ShoppingCartService {
         return updated;
     }
 
-    public boolean addValueToKey(String key, Item item){
-        String userItems = redisClient.get(key);
-        JsonArray itemArray = new JsonArray();
-        if (userItems != null && !userItems.isEmpty()) {
-            itemArray = JsonParser.parseString(userItems).getAsJsonArray();
+    public boolean addCartItem(String username, String productName) {
+        boolean success = false;
+        Product product = productRepository.findByName(productName);
+        if (product != null) {
+            String userItems = redisClient.get(username);
+            JsonArray itemArray = new JsonArray();
+            if (userItems != null && !userItems.isEmpty()) {
+                itemArray = JsonParser.parseString(userItems).getAsJsonArray();
+            }
+            Item item = new Item(product.getName(), product.getPrice());
+            itemArray.add(JsonParser.parseString(new Gson().toJson(item)).getAsJsonObject());
+            success = redisClient.set(username, itemArray.toString(), RedisClient.EXPIRATION_A_DAY);
         }
-        itemArray.add(JsonParser.parseString(new Gson().toJson(item)).getAsJsonObject());
-        return redisClient.set(key, itemArray.toString(), RedisClient.EXPIRATION_A_DAY);
+        return success;
     }
 }

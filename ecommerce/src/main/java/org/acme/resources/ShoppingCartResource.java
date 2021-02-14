@@ -1,7 +1,6 @@
 package org.acme.resources;
 
 import org.acme.services.ShoppingCartService;
-import org.acme.models.Item;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
@@ -15,8 +14,8 @@ public class ShoppingCartResource {
     ShoppingCartService shoppingCartService;
 
     @GET
-    @Path("/{key}")
-    public String getShoppingCart(@PathParam("key") String username) {
+    @Path("/{username}")
+    public String getShoppingCart(@PathParam("username") String username) {
         String cart = shoppingCartService.get(username);
         return cart != null
                 ? cart
@@ -24,18 +23,18 @@ public class ShoppingCartResource {
     }
 
     @DELETE
-    @Path("/{key}/{name}")
-    public String removeItemFromCart(@PathParam("key") String username, @PathParam("name") String name) {
+    @Path("/{username}/{name}")
+    public String removeItemFromCart(@PathParam("username") String username, @PathParam("name") String name) {
         return shoppingCartService.remove(username, name)
                 ? "successfully updated cart"
                 : "could not updated";
     }
 
     @POST
-    @Path("/{key}")
+    @Path("/{username}/{name}")
     @Consumes(MediaType.APPLICATION_JSON)
-    public String addItemToShoppingCart(@PathParam("key") String username, Item item) {
-        return shoppingCartService.addValueToKey(username, item)
+    public String addItemToShoppingCart(@PathParam("username") String username, @PathParam("name") String productName) {
+        return shoppingCartService.addCartItem(username, productName)
                 ? "successfully add item to cart"
                 : "unable to add";
     }
