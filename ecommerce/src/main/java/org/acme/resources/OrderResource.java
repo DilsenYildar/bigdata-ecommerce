@@ -2,6 +2,8 @@ package org.acme.resources;
 
 import org.acme.models.Order;
 import org.acme.services.OrderService;
+import org.bson.BsonObjectId;
+import org.bson.BsonValue;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
@@ -23,8 +25,10 @@ public class OrderResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public String createOrder(Order order) {
-        service.add(order);// todo...
-        return "created order";
+        BsonValue add = service.add(order);
+        return add != null
+                ? "created order: " + ((BsonObjectId) add).getValue()
+                : "could not created order";
     }
 
     // todo...
