@@ -8,7 +8,6 @@ import org.acme.repository.ProductRepository;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import javax.management.Query;
 
 @Singleton
 public class ShoppingCartService {
