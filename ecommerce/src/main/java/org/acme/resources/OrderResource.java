@@ -1,9 +1,8 @@
 package org.acme.resources;
 
+import com.google.gson.GsonBuilder;
 import org.acme.models.Order;
 import org.acme.services.OrderService;
-import org.bson.BsonObjectId;
-import org.bson.BsonValue;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
@@ -19,17 +18,35 @@ public class OrderResource {
 
     @GET
     public List<Order> getOrderList() {
-        return service.list();
+        return service.getOrders();
     }
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public String createOrder(Order order) {
-        BsonValue add = service.add(order);
-        return add != null
-                ? "created order: " + ((BsonObjectId) add).getValue()
-                : "could not created order";
+        service.saveOrder(order);
+        return String.format("created order: %s",  new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create().toJson(order));
     }
 
-    // todo...
+    @DELETE
+    @Path("{id}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public String deleteOrder(@PathParam("id") String id) {
+        return service.deleteOrder(id) ? "deleted order successfully" : "unable to delete";
+    }
+
+    @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
+    public String updateOrder(Order order) {
+        service.updateOrder(order);
+        return String.format("created order: %s",  new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create().toJson(order));
+    }
+
+    // only used for test.
+    @DELETE
+    @Consumes(MediaType.APPLICATION_JSON)
+    public String clearOrderTable() {
+        service.deleteOrders();
+        return "deleted orders";
+    }
 }
