@@ -7,8 +7,6 @@ import org.acme.db.RedisClient;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import static org.acme.db.RedisClient.EXPIRATION_IN_THREE_MINUTES;
-
 @Singleton
 public class SessionService {
 
@@ -18,17 +16,12 @@ public class SessionService {
     @Inject
     Cryptographer cryptographer;
 
-    public String get(String username) throws Exception {
-        String decryptedPass = null;
-        String value = redisClient.get(username);
-        if (value != null) {
-            decryptedPass = cryptographer.decrypt(value);
-        }
-        return decryptedPass;
+    public String decryptPassword(String encryptedPass) throws Exception {
+        return cryptographer.decrypt(encryptedPass);
     }
 
     public boolean set(String username, String password) {
-        return redisClient.set(username, cryptographer.encrypt(password), EXPIRATION_IN_THREE_MINUTES);
+        return redisClient.set(username, password, 0);
     }
 
     public boolean remove(String username) {

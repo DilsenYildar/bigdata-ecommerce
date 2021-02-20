@@ -12,14 +12,9 @@ import java.util.Set;
 public class RedisClient {
     public static final String REDIS_HOST = "localhost";
     public static final int REDIS_PORT = 6379;
-
-//    public void incrBy(String key, Long incrementBy) {
-//        jedis.incrBy(key, incrementBy);
-//    }
-
     public static final int EXPIRATION_A_DAY = 24 * 60 * 60;
-
-    public static final int EXPIRATION_IN_THREE_MINUTES = 3 * 60;
+    public static final String TOKEN_KEY_PREFIX = "token:";
+    public static final String ITEM_KEY_PREFIX = "item:";
 
     private JedisPool readPool;
 

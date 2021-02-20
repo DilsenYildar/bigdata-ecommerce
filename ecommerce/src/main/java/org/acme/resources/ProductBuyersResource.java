@@ -1,7 +1,7 @@
 package org.acme.resources;
 
+import org.acme.models.entites.Customer;
 import org.acme.models.ProductBuyers;
-import org.acme.models.User;
 import org.acme.models.entites.Product;
 import org.neo4j.driver.Driver;
 import org.neo4j.driver.Result;
@@ -95,25 +95,25 @@ public class ProductBuyersResource {
 
     @POST
     @Path("/user")
-    public CompletionStage<Response> createUser(User user) {
+    public CompletionStage<Response> createUser(Customer customer) {
         // bu marka ile kullanıcı var mı
-        // "MATCH (pb:Product)-[:owns] -> (u:User) WHERE u.username = $username AND pb.name = $name RETURN pb",
+        // "MATCH (pb:Product)-[:owns] -> (u:Customer) WHERE u.username = $username AND pb.name = $name RETURN pb",
 
-//        "CREATE (pb:Product {name: $name, brand: $brand, price: $price}) -[:owns]-> (u:User " +
+//        "CREATE (pb:Product {name: $name, brand: $brand, price: $price}) -[:owns]-> (u:Customer " +
 //                "{username: $username}) RETURN pb, u",
 
         Session session = driver.session();
         boolean existingRecord = session.readTransaction(tx -> {
             // bu kullanıcı ile kayıt var mı?
-            Result result = tx.run("MATCH(u:User) WHERE u.username = $username RETURN u",
-                    Values.parameters("username", user.getUsername()));
+            Result result = tx.run("MATCH(u:Customer) WHERE u.username = $username RETURN u",
+                    Values.parameters("username", customer.getUsername()));
             return result.list().isEmpty();
         });
         AsyncSession asyncSession = driver.asyncSession();
         return asyncSession.writeTransactionAsync(tx -> {
             if (existingRecord) {
-                return tx.runAsync("CREATE (u:User {username: $username}) RETURN u",
-                        Values.parameters("username", user.getUsername())).thenCompose(ResultCursor::singleAsync);
+                return tx.runAsync("CREATE (u:Customer {username: $username}) RETURN u",
+                        Values.parameters("username", customer.getUsername())).thenCompose(ResultCursor::singleAsync);
             } else {
                 return null;
             }
@@ -128,14 +128,14 @@ public class ProductBuyersResource {
     public CompletionStage<Response> assignProductToUser(ProductBuyers productBuyers) {
         Session session = driver.session();
         boolean existingRecord = session.readTransaction(tx -> {
-            Result result = tx.run("MATCH (u:User)-[:owns] -> (p:Product) WHERE u.username = $username AND p.name = $name RETURN p",
+            Result result = tx.run("MATCH (u:Customer)-[:owns] -> (p:Product) WHERE u.username = $username AND p.name = $name RETURN p",
                     Values.parameters("username", productBuyers.getUsername(), "name", productBuyers.getProductName()));
             return result.list().isEmpty();
         });
         AsyncSession asyncSession = driver.asyncSession();
         return asyncSession.writeTransactionAsync(tx -> {
             if (existingRecord) {
-                return tx.runAsync("MATCH (p:Product), (u:User) WHERE p.name = $name AND u.username = $username" +
+                return tx.runAsync("MATCH (p:Product), (u:Customer) WHERE p.name = $name AND u.username = $username" +
                                 " CREATE (u)-[r:owns]->(p) RETURN type(r)",
                         Values.parameters("name", productBuyers.getProductName(), "username",
                                 productBuyers.getUsername())).thenCompose(ResultCursor::singleAsync);
@@ -153,10 +153,10 @@ public class ProductBuyersResource {
     public CompletionStage<Response> getProductUsers(ProductBuyers productBuyers) {
         AsyncSession session = driver.asyncSession();
         return session
-                .runAsync("MATCH (u:User)-[:owns]->(p:Product) WHERE p.name = $name RETURN u",
+                .runAsync("MATCH (u:Customer)-[:owns]->(p:Product) WHERE p.name = $name RETURN u",
                         Values.parameters("name", productBuyers.getProductName()))
                 .thenCompose(cursor ->
-                        cursor.listAsync(record -> User.from(record.get("u").asNode()))
+                        cursor.listAsync(record -> Customer.from(record.get("u").asNode()))
                 )
                 .thenCompose(users ->
                         session.closeAsync().thenApply(signal -> users)
