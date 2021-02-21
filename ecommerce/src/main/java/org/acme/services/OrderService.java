@@ -26,6 +26,7 @@ public class OrderService {
         order.setItems(shoppingCartService.getCartItems(ITEM_KEY_PREFIX.concat(order.getUsername())));
         order.setCreationDate(LocalDate.now().toString());
         orderRepository.persist(order);
+        shoppingCartService.clearCart(ITEM_KEY_PREFIX.concat(order.getUsername()));
     }
 
     public List<Order> getOrders() {

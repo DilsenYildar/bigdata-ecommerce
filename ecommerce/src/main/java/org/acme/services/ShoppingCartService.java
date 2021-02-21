@@ -55,6 +55,10 @@ public class ShoppingCartService {
         return result;
     }
 
+    public void clearCart(String key) {
+        redisClient.remove(key);
+    }
+
     public boolean remove(String key, String name) {
         boolean updated = false;
         String cart = redisClient.get(key);
