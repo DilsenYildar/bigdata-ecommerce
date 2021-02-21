@@ -7,10 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.neo4j.driver.types.Node;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
 @Data
@@ -24,6 +21,7 @@ public class Product {
     private Long id;
 
     @Expose
+    @Column(unique = true)
     private String name;
 
     @Expose

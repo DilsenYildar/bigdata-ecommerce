@@ -13,6 +13,7 @@ import javax.inject.Singleton;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import static org.acme.db.RedisClient.ITEM_KEY_PREFIX;
 
@@ -93,5 +94,33 @@ public class ShoppingCartService {
             }
         }
         return success;
+    }
+
+    public void updateCartItems(Product product, String productName) {
+        Set<String> keys = redisClient.getKeysWithPattern(ITEM_KEY_PREFIX);
+        keys.forEach(key -> {
+            String userItems = redisClient.get(key);
+            if (userItems != null && !userItems.isEmpty()) {
+                JsonArray itemArray = JsonParser.parseString(userItems).getAsJsonArray();
+                JsonArray updatedItemArray = itemArray.deepCopy();
+                itemArray.forEach(item -> {
+                    JsonObject itemJson = item.getAsJsonObject();
+                    if (productName.equals(itemJson.get("name").getAsString())) {
+                        updatedItemArray.remove(itemJson);
+                        if (product.getPrice() != null) {
+                            itemJson.addProperty("price", product.getPrice());
+                        }
+                        if (product.getName() != null) {
+                            itemJson.addProperty("name", product.getName());
+                        }
+                        if (product.getBrand() != null) {
+                            itemJson.addProperty("brand", product.getBrand());
+                        }
+                        updatedItemArray.add(itemJson);
+                    }
+                });
+                redisClient.set(key, updatedItemArray.toString(), RedisClient.EXPIRATION_A_DAY);
+            }
+        });
     }
 }

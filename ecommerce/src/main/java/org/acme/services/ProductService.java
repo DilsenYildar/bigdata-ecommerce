@@ -13,12 +13,15 @@ public class ProductService {
     @Inject
     ProductRepository productRepository;
 
+    @Inject
+    ShoppingCartService shoppingCartService;
+
     public Product get(String pName) throws Exception {
         return productRepository.find("name", pName).firstResult();
     }
 
     @Transactional
-    public void set(Product product) {
+    public void create(Product product) {
         productRepository.persist(product);
     }
 
@@ -26,4 +29,21 @@ public class ProductService {
     public boolean remove(String pName) {
         return productRepository.delete("name", pName) != 0;
     }
+
+    @Transactional
+    public void updateProduct(String name, Product requestedProduct) {
+        Product actualProduct = productRepository.findByName(name);
+        if (requestedProduct.getName() != null) {
+            actualProduct.setName(requestedProduct.getName());
+        }
+        if (requestedProduct.getPrice() != null) {
+            actualProduct.setPrice(requestedProduct.getPrice());
+        }
+        if (requestedProduct.getBrand() != null) {
+            actualProduct.setBrand(requestedProduct.getBrand());
+        }
+        shoppingCartService.updateCartItems(requestedProduct, name);
+        productRepository.persist(actualProduct);
+    }
+
 }

@@ -31,9 +31,17 @@ public class ProductResource {
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public String createProduct(Product customer) {
-        service.set(customer);
+    public String createProduct(Product product) {
+        service.create(product);
         return "successfully created";
+    }
+
+    @PUT
+    @Path("{name}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public String updateProduct(@PathParam("name") String name, Product product) {
+        service.updateProduct(name, product);
+        return "successfully updated";
     }
 
 }
