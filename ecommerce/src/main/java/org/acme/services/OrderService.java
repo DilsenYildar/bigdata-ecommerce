@@ -10,14 +10,20 @@ import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 
+import static org.acme.db.RedisClient.ITEM_KEY_PREFIX;
+
 @Singleton
 public class OrderService {
 
     @Inject
     OrderRepository orderRepository;
 
+    @Inject
+    ShoppingCartService shoppingCartService;
+
     @Transactional
     public void saveOrder(Order order) {
+        order.setItems(shoppingCartService.getCartItems(ITEM_KEY_PREFIX.concat(order.getUsername())));
         order.setCreationDate(LocalDate.now().toString());
         orderRepository.persist(order);
     }

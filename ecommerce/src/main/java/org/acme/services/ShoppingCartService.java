@@ -11,6 +11,9 @@ import org.acme.repository.ProductRepository;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.acme.db.RedisClient.ITEM_KEY_PREFIX;
 
 @Singleton
@@ -35,6 +38,19 @@ public class ShoppingCartService {
                 resultArray.add(cartElem.getAsJsonObject());
             }
             result = resultArray.toString();
+        }
+        return result;
+    }
+
+    public List<Item> getCartItems(String key) {
+        List<Item> result = new ArrayList<>();
+        String cart = redisClient.get(key);
+        if (cart != null && !cart.isEmpty()) {
+            JsonArray cartArray = JsonParser.parseString(cart).getAsJsonArray();
+            for (JsonElement cartElem : cartArray) {
+                Item item = new Gson().fromJson(cartElem.getAsJsonObject(), Item.class);
+                result.add(item);
+            }
         }
         return result;
     }
