@@ -1,7 +1,9 @@
 package org.acme.services;
 
+import org.acme.models.Item;
 import org.acme.models.Order;
 import org.acme.repository.OrderRepository;
+import org.acme.repository.ProductRepository;
 import org.bson.types.ObjectId;
 
 import javax.inject.Inject;
@@ -19,6 +21,9 @@ public class OrderService {
     OrderRepository orderRepository;
 
     @Inject
+    ProductRepository productRepository;
+
+    @Inject
     ShoppingCartService shoppingCartService;
 
     @Transactional
@@ -27,6 +32,14 @@ public class OrderService {
         order.setCreationDate(LocalDate.now().toString());
         orderRepository.persist(order);
         shoppingCartService.clearCart(ITEM_KEY_PREFIX.concat(order.getUsername()));
+        updateStock(order);
+    }
+
+    private void updateStock(Order order) {
+        for (Item item : order.getItems()) {
+            productRepository.update("UPDATE Product As p SET p.quantity = coalesce(p.quantity, 0) -1 WHERE p.name=?1",
+                    item.getName());
+        }
     }
 
     public List<Order> getOrders() {

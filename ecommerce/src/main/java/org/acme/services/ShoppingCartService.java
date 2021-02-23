@@ -79,7 +79,7 @@ public class ShoppingCartService {
 
     public boolean addCartItem(String username, String productName) {
         boolean success = false;
-        Product product = productRepository.findByName(productName);
+        Product product = productRepository.find("name", productName).firstResult();
         if (product != null) {
             Customer customer = customerRepository.find("username", username).firstResult();
             if (customer != null) {

@@ -30,9 +30,11 @@ public class Product {
     @Expose
     private String price;
 
+    @Expose
+    private Long quantity;
 
     public static Product from(Node node) {
         return new Product(node.id(), node.get("name").asString(), node.get("brand").asString(),
-                node.get("price").asString());
+                node.get("price").asString(), node.get("quantity").asLong());
     }
 }

@@ -32,7 +32,7 @@ public class ProductService {
 
     @Transactional
     public void updateProduct(String name, Product requestedProduct) {
-        Product actualProduct = productRepository.findByName(name);
+        Product actualProduct = productRepository.find("name", name).firstResult();
         if (requestedProduct.getName() != null) {
             actualProduct.setName(requestedProduct.getName());
         }
@@ -41,6 +41,9 @@ public class ProductService {
         }
         if (requestedProduct.getBrand() != null) {
             actualProduct.setBrand(requestedProduct.getBrand());
+        }
+        if (requestedProduct.getQuantity() != null) {
+            actualProduct.setQuantity(requestedProduct.getQuantity());
         }
         shoppingCartService.updateCartItems(requestedProduct, name);
         productRepository.persist(actualProduct);
