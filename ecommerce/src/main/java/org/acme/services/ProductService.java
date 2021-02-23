@@ -16,6 +16,9 @@ public class ProductService {
     @Inject
     ShoppingCartService shoppingCartService;
 
+    @Inject
+    ProductBuyersService productBuyersService;
+
     public Product get(String pName) throws Exception {
         return productRepository.find("name", pName).firstResult();
     }
@@ -23,6 +26,7 @@ public class ProductService {
     @Transactional
     public void create(Product product) {
         productRepository.persist(product);
+        productBuyersService.createProductToNeo4j(product);
     }
 
     @Transactional

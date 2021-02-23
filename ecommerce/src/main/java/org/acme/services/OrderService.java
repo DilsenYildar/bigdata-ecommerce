@@ -2,6 +2,7 @@ package org.acme.services;
 
 import org.acme.models.Item;
 import org.acme.models.Order;
+import org.acme.models.ProductBuyers;
 import org.acme.repository.OrderRepository;
 import org.acme.repository.ProductRepository;
 import org.bson.types.ObjectId;
@@ -26,6 +27,9 @@ public class OrderService {
     @Inject
     ShoppingCartService shoppingCartService;
 
+    @Inject
+    ProductBuyersService productBuyersService;
+
     @Transactional
     public void saveOrder(Order order) {
         order.setItems(shoppingCartService.getCartItems(ITEM_KEY_PREFIX.concat(order.getUsername())));
@@ -33,6 +37,13 @@ public class OrderService {
         orderRepository.persist(order);
         shoppingCartService.clearCart(ITEM_KEY_PREFIX.concat(order.getUsername()));
         updateStock(order);
+        assignUserToProductOnNeo4j(order);
+    }
+
+    private void assignUserToProductOnNeo4j(Order order) {
+        for (Item item : order.getItems()) {
+            productBuyersService.createRelationWithProductAndCustomer(new ProductBuyers(order.getUsername(), item.getName()));
+        }
     }
 
     private void updateStock(Order order) {

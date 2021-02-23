@@ -17,8 +17,8 @@ public class CustomerResource {
 
     @GET
     @Path("/{username}")
-    public String getCustomer(@PathParam("username") String username) throws Exception {
-        Customer customer = service.get(username);
+    public String getCustomer(@PathParam("username") String username) {
+        Customer customer = service.getByUsername(username);
         return customer != null ? new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create().toJson(
                 customer) : "customer data not found";
     }
@@ -26,13 +26,13 @@ public class CustomerResource {
     @DELETE
     @Path("/{username}")
     public String deleteCustomer(@PathParam("username") String username) {
-        return service.remove(username) ? "successfully deleted" : "could not deleted";
+        return service.deleteCustomer(username) ? "successfully deleted" : "could not deleted";
     }
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public String createCustomer(Customer customer) {
-        service.set(customer);
+        service.createCustomer(customer);
         return "successfully created";
     }
 }

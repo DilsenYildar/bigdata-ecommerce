@@ -18,18 +18,22 @@ public class CustomerService {
     @Inject
     CustomerRepository customerRepository;
 
-    public Customer get(String username) throws Exception {
+    @Inject
+    ProductBuyersService productBuyersService;
+
+    public Customer getByUsername(String username) {
         return customerRepository.find("username", username).firstResult();
     }
 
     @Transactional
-    public void set(Customer customer) {
+    public void createCustomer(Customer customer) {
         customer.setPassword(cryptographer.encrypt(customer.getPassword()));
         customerRepository.persist(customer);
+        productBuyersService.createUserToNeo4j(customer);
     }
 
     @Transactional
-    public boolean remove(String username) {
+    public boolean deleteCustomer(String username) {
         return customerRepository.delete("username", username) != 0;
     }
 }
