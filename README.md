@@ -1,5 +1,13 @@
 # bd-ecommerce
 
+## pre-requests
+
+docker run -d --name mongodb -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=root -e MONGO_INITDB_ROOT_PASSWORD=root mongo
+
+docker run --publish=7474:7474 --name=neo4j -d --publish=7687:7687 -e 'NEO4J_AUTH=neo4j/secret' neo4j:4.0.0
+
+redis and postgres..
+
 
 ###
 ###
